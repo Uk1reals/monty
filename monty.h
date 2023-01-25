@@ -1,12 +1,30 @@
 #ifndef MONTY_H
 #define MONTY_H
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stddef.h>
+#include <stdlib.h>
 
-#define STACKMODE 0
-#define QUEUEMODE 1
+#define INSTRUCTIONS              \
+	{                           \
+		{"push", push},       \
+		    {"pall", pall},   \
+		    {"pint", pint},   \
+		    {"pop", pop},     \
+		    {"swap", swap},   \
+		    {"nop", nop},     \
+		    {"div", _div},    \
+		    {"mul", _mul},    \
+		    {"add", _add},    \
+		    {"sub", _sub},    \
+		    {"mod", mod},     \
+		    {"pchar", pchar}, \
+		    {"pstr", pstr},   \
+		    {"rotl", rotl},   \
+		    {"rotr", rotr},   \
+		{                     \
+			NULL, NULL      \
+		}                     \
+	}
 
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
@@ -15,7 +33,7 @@
  * @next: points to the next element of the stack (or queue)
  *
  * Description: doubly linked list node structure
- * for stack, queues, LIFO, FIFO Holberton project
+ * for stack, queues, LIFO, FIFO
  */
 typedef struct stack_s
 {
@@ -25,12 +43,12 @@ typedef struct stack_s
 } stack_t;
 
 /**
- * struct instruction_s - opcoode and its function
+ * struct instruction_s - opcode and its function
  * @opcode: the opcode
  * @f: function to handle the opcode
  *
  * Description: opcode and its function
- * for stack, queues, LIFO, FIFO Holberton project
+ * for stack, queues, LIFO, FIFO
  */
 typedef struct instruction_s
 {
@@ -38,47 +56,47 @@ typedef struct instruction_s
 	void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-union montyfunctype
+/**
+* struct help - argument for the current opcode
+* @data_struct: stack mode, stack (default) and queue
+* @argument: the arguments of the string
+*
+* Description: global structure used to pass data around the functions easily
+*/
+typedef struct help
 {
-	void (*toponly)(stack_t **top);
-	void (*pushmode)(stack_t **top, stack_t **bot, int val, int mode);
-	void (*topbot)(stack_t **top, stack_t **bot);
-};
+	int data_struct;
+	char *argument;
+} help;
+help global;
 
-typedef struct optype
-{
-	char *opcode;
-	union montyfunctype func;
-} optype;
+/* stack utility functions available in linked_list.c */
+stack_t *add_node(stack_t **stack, const int n);
+stack_t *queue_node(stack_t **stack, const int n);
+void free_stack(stack_t *stack);
+size_t print_stack(const stack_t *stack);
 
-typedef struct montyglob
-{
-	char *buffer;
-	unsigned long linenum;
-	FILE* script;
-} montyglob;
+void push(stack_t **stack, unsigned int line_cnt);
+void pall(stack_t **stack, unsigned int line_cnt);
+void pint(stack_t **stack, unsigned int line_cnt);
+void swap(stack_t **stack, unsigned int line_cnt);
+void pop(stack_t **stack, unsigned int line_cnt);
+void nop(stack_t **stack, unsigned int line_cnt);
 
-/* from montyparse.c */
-void exitwrap(int exitcode, char *existring, stack_t *top);
+void _div(stack_t **stack, unsigned int line_cnt);
+void _add(stack_t **stack, unsigned int line_cnt);
+void _sub(stack_t **stack, unsigned int line_cnt);
+void _mul(stack_t **stack, unsigned int line_cnt);
+void mod(stack_t **stack, unsigned int line_cnt);
 
-/* opstack.c */
-void push(stack_t **top, stack_t **bot, int val, int mode);
-void pop(stack_t **top);
-void swap(stack_t **top, stack_t **bot);
-void rotl(stack_t **top, stack_t **bot);
-void rotr(stack_t **top, stack_t **bot);
+void pchar(stack_t **stack, unsigned int line_cnt);
+void pstr(stack_t **stack, unsigned int line_cnt);
+void rotl(stack_t **stack, unsigned int line_count);
+void rotr(stack_t **stack, unsigned int line_count);
 
-/* opprint.c */
-void pall(stack_t **top);
-void pint(stack_t **top);
-void pchar(stack_t **top);
-void pstr(stack_t **top);
+void opcode(stack_t **stack, char *str, unsigned int line_cnt);
 
-/* opmath.c */
-void add(stack_t **top);
-void sub(stack_t **top);
-void mul(stack_t **top);
-void _div(stack_t **top);
-void mod(stack_t **top);
+int is_digit(char *string);
+int isnumber(char *str);
 
 #endif /* MONTY_H */
